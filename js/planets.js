@@ -4,8 +4,8 @@ $(document).ready(function() {
 
     var bars = [];
     var figureContainer = $('<div id="figure"></div>');
-    var graphContainer = $('<div id="graph"></div>');
-    var barContainer = $('<div id="bars"></div>');
+    var graphContainer = $('<div class="graph"></div>');
+    var barContainer = $('<div class="bars"></div>');
     var data = $(data);
     var container = $(container);
     var chartData;
@@ -54,7 +54,7 @@ $(document).ready(function() {
         });
         return xLegend;
       },
-      columnGroups: function() {
+      columnGroup: function() {
         columnGroup = [];
         var columns = data.find('tbody tr:eq(0) td').length;
         for (var i = 0; i < columns; i++) {
@@ -65,19 +65,19 @@ $(document).ready(function() {
         }
         return columnGroup;
       }
-    }
+    };
 
     chartData = tableData.chartData();    
     chartYMax = tableData.chartYMax();
-    columnGroups = tableData.columnGroups();
+    columnGroup = tableData.columnGroup();
 
     $.each(columnGroup, function(i) {
       var barGroup = $('<div class="bar-group"></div>');
       for (var c = 0, d = columnGroup[i].length; c < d; c++){
         var barObject = {};
         barObject.label = this[c];
-        barObject.height = barObject.label/chartYMax * 100 + '%';
-        barObject.bar = $('div class="bar fig' + j +'"><span>' + barObject.label + '</span></div>').appendTo(barGroup);
+        barObject.height = (barObject.label / chartYMax) * 1000 + '%';
+        barObject.bar = $('<div class="bar fig' + c +'"><span>' + barObject.label + '</span></div>').appendTo(barGroup);
         bars.push(barObject);
       }
       barGroup.appendTo(barContainer);
@@ -96,6 +96,14 @@ $(document).ready(function() {
     });
     legendList.appendTo(figureContainer);
 
+    var xLegend = tableData.xLegend();
+    var xAxisList = $('<ul class="x-axis"></ul>');
+    $.each(xLegend, function(i) {
+      var listItem = $('<li><span>' + this + '</span></li>').appendTo(xAxisList);
+    });
+
+    xAxisList.appendTo(graphContainer);
+
     var yLegend = tableData.yLegend();
     var yAxisList = $('<ul class="y-axis"></ul>');
     $.each(yLegend, function(i) {
@@ -103,24 +111,34 @@ $(document).ready(function() {
     });
     yAxisList.appendTo(graphContainer);
 
-    var xLegend = tableData.xLegend();
-    var xAxisList = $('<ul class="x-axis"></ul>');
-    $.each(xLegend, function(i) {
-      var listItem = $('<li><span>' + this + '</span></li>').appendTo(xAxisList);
-    });
-    xAxisList.appendTo(graphContainer);
-
     barContainer.appendTo(graphContainer);    
     graphContainer.appendTo(figureContainer);
     figureContainer.appendTo(container);
-    }
 
     function  displayGraph(bars, i) {
       if (i < bars.length) {
         $(bars[i].bar).animate({height: bars[i].height}, 500);
-        barTimer = setTimeout(function(){i++; displayGraph(bars, i)}, 200);
+        barTimer = setTimeout(function(){i++; displayGraph(bars, i);
+        }, 200);
       }
     }
-    createGraph();
+    
+    function resetGraph() {
+      $.each(bars, function(i) {
+        $(bars[i].bar).stop().css({'height': 0, '-webkit-transition': 'none'});
+      });
+      
+      clearTimeout(barTimer);
+      clearTimeout(graphTimer);
+      
+      graphTimer = setTimeout(function() {    
+        displayGraph(bars, 0);
+      }, 200);
+    }
+    $('#reset-graph-button').click(function() {
+      resetGraph();
+      return false;
+    });
+    resetGraph();
   }
-});)
+});
