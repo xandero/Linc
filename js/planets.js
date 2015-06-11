@@ -109,7 +109,7 @@ $(document).ready(function() {
       var listItem = $('<li><span>' + this + '</span></li>').appendTo(xAxisList);
     });
     xAxisList.appendTo(graphContainer);
-    
+
     barContainer.appendTo(graphContainer);    
     graphContainer.appendTo(figureContainer);
     figureContainer.appendTo(container);
