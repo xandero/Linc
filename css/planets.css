@@ -30,7 +30,7 @@ a {
    display: none;
 }
 
-#wrapper {
+#container {
    height: 420px;
    left: 50%;
    margin: -210px 0 0 -270px;
